@@ -16,7 +16,7 @@
 
         <script src="js/vendor/modernizr-2.6.1.min.js"></script>
     </head>
-    <body>
+    <body id="devBody">
         <!--[if lt IE 7]>
             <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
         <![endif]-->
@@ -40,9 +40,9 @@
         <!-- Initialize Calendar -->
         <script type="text/javascript">
           $('div#calendar').fsucalendar({
-            count       : 5,
+            count       : 1,
             display_all : true,
-            feed_url    : 'http://dsa-web01.dsa.fsu.edu/calendar/rss/rss2.0.php?cal=97bd14bb8309529a8613aae172ba1dbf&cpath=&rssview=daysfrom&days=31&getdate'
+            feed_url    : 'http://calendar.fsu.edu/_layouts/listfeed.aspx?List=%7B4BCA91EA-72AE-4D23-9D11-8D44FB5AAED2%7D&Source=http%3A%2F%2Fcalendar%2Efsu%2Eedu%2FLists%2FCenter%2520for%2520Global%2520Engagement%2Fcalendar%2Easpx'
           });
         </script>
     </body>

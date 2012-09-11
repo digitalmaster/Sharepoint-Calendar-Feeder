@@ -60,10 +60,28 @@
         day_of_week['6'] = "Saturday";
         day_of_week['7'] = "Sunday";
 
+        //Debug Function
+        function show(somethingCool){
+            var elem = document.getElementById('devBody');
+            elem.innerHTML +=  somethingCool;
+        }
+
         //Fix timezone issue
         Date.prototype.addHours= function(h){
             this.setHours(this.getHours()+h);
             return this;
+        }
+
+        //sub string (n)th itteration function
+        function GetSubstringIndex(str, substring, n) {
+            var times = 0, index = null;
+
+            while (times < n && index !== -1) {
+                index = str.indexOf(substring, index+1);
+                times++;
+            }
+
+            return index;
         }
 
         //function to format time
@@ -120,18 +138,14 @@
             var containerHeight = $(content).outerHeight();
             $(content).css({height: containerHeight});
 
-            //Function that removes date from begining of title string
-            function removeDateTitle(strValue){
-                var string = strValue.substr(16);
-                var string = $.trim(string);
-                return string;
-            };
+            //Function tha stripts html
+            function strip(html)
+            {
+               var tmp = document.createElement("DIV");
+               tmp.innerHTML = html;
+               return tmp.textContent||tmp.innerText;
+            }
 
-            function removeDateDesc(strValue){
-                var string = strValue.substr(25);
-                var string = $.trim(string);
-                return string;
-            };
             
             // Check out the result object for a list of properties returned in each entry.
             // http://code.google.com/apis/ajaxfeeds/documentation/reference.html#JSON
@@ -152,26 +166,40 @@
 
               //Query entries for matches and add them to "entry" array for display      
               if(cond1 || cond2 ){
-
-                var pubDate     = new Date(entry.publishedDate);
+                console.log(entry.content);
+                //Cache Values
+                var calInfo = entry.content;
+                
+                //Parse Variables
+                var pubDate     = new Date( calInfo.substring(calInfo.indexOf('Start Time:</b>') + 16, GetSubstringIndex(calInfo, '</div>', 2) ) );                
+                var pubDateEnd  = new Date( calInfo.substring(calInfo.indexOf('End Time:</b>') + 14, GetSubstringIndex(calInfo, '</div>', 3) ) ) ;                
                 var pubMonth    = month_names[pubDate.getMonth()];
                 var pubdateNum  = pubDate.getDate();
                 var href        = 'http://calendar.fsu.edu/Lists/Center%20for%20Global%20Engagement/calendar.aspx';//entry.link;
-                var title       = removeDateTitle(entry.title);
-                var location    = entry.categories[0];
-                    if(location != undefined){
-                        location    = location.replace(/[+]/g ," ");
-                    }
+                var title       = entry.title;
+                var location    = calInfo.substring(calInfo.indexOf('Location:</b>') + 14, calInfo.indexOf('</div>') );
+                var time        = formatTime( pubDate );
+                var timeEnd     = formatTime(pubDateEnd);
                     
-                var time        = formatTime( entry.publishedDate );
-                var desc = entry.content; 
-                    desc = removeDateDesc(desc);
-                    desc_short = desc.split(" ").splice(0, 25).join(" ");
+                var desc = calInfo.substring(calInfo.indexOf('Event Description:</b>') + 23, GetSubstringIndex(calInfo, '</div>', 4) ); 
+                
+                if (! desc == ''){
+                    var desc_short = desc.split(" ").splice(0, 25).join(" ");
                     desc_short += "...";
+                }
 
+                //Prevent rendering errors when they dont fill in a location
+                if(location != undefined){
+                    location    = location.replace(/[+]/g ," ");
+                }
                 
                 var fb_url ='<iframe src="http://www.facebook.com/plugins/like.php?href=http://www.facebook.com/fsucge&action=recommend" scrolling="no" frameborder="0" class="fb_like_btn"></iframe>';
                 
+                html = '<div class="calentry">'  ;
+
+
+                html +='</div>';
+
                 // Output
                 html += '<div class="calentry' + ' tooltip_' + i + '">' + '<div class="calcon">' + '<div class="caltop">' + pubMonth + '</div>' + '<div class="calbottom">' + 
                 pubdateNum + '</div>' + '</div>' + '<div class="description"><h3 class="calhead"><a href="' + href + '" target="_blank">' + title + '</a></h3>' + 
@@ -292,3 +320,6 @@
     });
      
 })(jQuery);
+
+// console.log('----------');
+// console.log(desc_short);
